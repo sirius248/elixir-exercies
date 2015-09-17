@@ -18,7 +18,12 @@ defmodule Phone do
   """
   @spec number(String.t) :: String.t
   def number(raw) do
-
+    filter_str = String.replace(raw, ~r/[-() .]/, "")
+    case { String.length(filter_str), String.first(filter_str) } do
+      {10, _}   -> filter_str
+      {11, "1"} -> String.slice(filter_str, 1..11)
+      {_, _}    -> "0000000000"
+    end
   end
 
   @doc """
@@ -40,7 +45,7 @@ defmodule Phone do
   """
   @spec area_code(String.t) :: String.t
   def area_code(raw) do
-  
+    raw |> number |> String.slice(0..2)
   end
 
   @doc """
@@ -62,6 +67,7 @@ defmodule Phone do
   """
   @spec pretty(String.t) :: String.t
   def pretty(raw) do
-  
+    str = raw |> number
+    Enum.join(["(", String.slice(str, 0..2), ") ", String.slice(str, 3..5), "-", String.slice(str, 6..9)])
   end
 end
